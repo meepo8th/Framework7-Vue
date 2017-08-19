@@ -9,7 +9,7 @@
  * 
  * Licensed under MIT
  * 
- * Released on: May 31, 2017
+ * Released on: August 19, 2017
  */
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
@@ -3162,6 +3162,11 @@ staticRenderFns: [],
   };
 
 var Searchbar = {
+  	  data: function data() {
+			return {
+				inputComplete: true
+			}
+		},
     render: function (c) {
       var self = this;
       var clearEl, cancelEl, inputEl, inputWrapEl;
@@ -3174,7 +3179,9 @@ var Searchbar = {
           input: self.onInput,
           change: self.onChange,
           focus: self.onFocus,
-          blur: self.onBlur
+          blur: self.onBlur,
+          compositionstart:self.onCompositionstart,
+          compositionend:self.onCompositionend
         }
       });
       if (self.clearButtonComputed) {
@@ -3285,6 +3292,12 @@ var Searchbar = {
       }
     },
     methods: {
+      onCompositionstart:function(){
+    		this.inputComplete=false;
+    	},
+    	onCompositionend:function(){
+    		this.inputComplete=true;
+    	},
       search: function (query) {
         if (!this.f7Searchbar) { return; }
         return this.f7Searchbar.search(query)
@@ -3317,7 +3330,7 @@ var Searchbar = {
         this.$emit('submit', event);
       },
       onSearch: function (event) {
-        if(!event.detail) { return; }
+        if(!event.detail||!this.inputComplete) { return; }
         this.$emit('searchbar:search', event.detail.query, event.detail.foundItems);
       },
       onClear: function (event) {
